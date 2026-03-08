@@ -4,6 +4,7 @@ import com.example.demo.common.result.Result;
 import com.example.demo.model.dto.LoginDTO;
 import com.example.demo.model.dto.RegisterDTO;
 import com.example.demo.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,13 +18,13 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/auth/register")
-    public Result<Void> register(@RequestBody RegisterDTO registerDto) {
+    public Result<Void> register(@Valid @RequestBody RegisterDTO registerDto) {
         authService.register(registerDto);
         return Result.success();
     }
 
     @PostMapping("/auth/login")
-    public Result<String> login(@RequestBody LoginDTO loginDto) {
+    public Result<String> login(@Valid @RequestBody LoginDTO loginDto) {
         String token = authService.login(loginDto);
         return Result.success(token);
     }

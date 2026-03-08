@@ -5,6 +5,7 @@ import com.example.demo.model.dto.UserInfoDTO;
 import com.example.demo.model.entity.User;
 import com.example.demo.model.vo.UserInfoVO;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,13 +38,13 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public Result<Void> insertUser(@RequestBody User user) {
+    public Result<Void> insertUser(@Valid @RequestBody User user) {
         userService.insertUser(user);
         return Result.success();
     }
 
     @PutMapping("/users/{id}")
-    public Result<Void> updateUserById(@PathVariable Long id, @RequestBody UserInfoDTO userInfoDto) {
+    public Result<Void> updateUserById(@PathVariable Long id, @Valid @RequestBody UserInfoDTO userInfoDto) {
         userService.updateUserById(id, userInfoDto);
         return Result.success();
     }
