@@ -16,10 +16,10 @@ import java.util.Map;
 @Component
 public class JwtUtils {
 
-    @Value("${jwt.secret:mySecretKeyThatIsLongEnough32Bytes}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration:86400000}")
+    @Value("${jwt.expiration}")
     private long jwtExpiration;
 
     private Key getSigningKey() {
