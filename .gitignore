@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### ENV ###
+.env
+
+### Claude ###
+.claude/
+CLAUDE.md
+
+### repomix ###
+repomix-output.xml
