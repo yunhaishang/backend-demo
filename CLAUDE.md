@@ -82,7 +82,7 @@ src/main/java/com/example/demo/
 
 - **Entities**: Use MyBatis Plus annotations (`@TableName`, `@TableId`, `@TableField`)
 - **Mappers**: Extend `BaseMapper<T>` for CRUD operations; custom SQL can be added via annotations or XML
-- **Auto-fill**: `TimeMetaObjectHandler` automatically sets `createdAt` and `updatedAt` timestamps on insert/update
+- **Auto-fill**: `TimeMetaObjectHandler` automatically sets `createTime` and `updateTime` timestamps on insert/update
 - **Connection Pool**: Druid configured via `spring.datasource.type`
 
 ### API Response Pattern

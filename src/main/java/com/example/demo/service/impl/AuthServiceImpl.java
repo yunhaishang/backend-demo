@@ -49,6 +49,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
 
         // 创建新用户
         user = userConverter.toEntity(registerDto);
+        user.setPassword(passwordUtils.encode(registerDto.getPassword()));
 
         this.save(user);
     }
@@ -85,16 +86,16 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
     @Override
     public void logout() {
         Long id = UserContext.getUserId();
-        String redisKey = "login:token:" + id;
-        if(redisUtils.get(redisKey) != null) {
-            redisUtils.del(redisKey);
+        if (id == null) {
+            return;
         }
+
+        String redisKey = "login:token:" + id;
+        redisUtils.del(redisKey);
 
         /*
         redisKey = "auth:perms:" + id;
-        if(redisUtils.get(redisKey) != null) {
-            redisUtils.del(redisKey);
-        }
+        redisUtils.del(redisKey);
         */
     }
 }
