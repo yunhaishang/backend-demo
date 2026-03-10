@@ -35,9 +35,5 @@ build/
 ### ENV ###
 .env
 
-### Claude ###
-.claude/
-CLAUDE.md
-
 ### repomix ###
 repomix-output.xml

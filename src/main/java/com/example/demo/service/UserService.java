@@ -11,7 +11,6 @@ public interface UserService extends IService<User> {
     List<UserInfoVO> getAllUsers();
     UserInfoVO getUserById(Long id);
     UserInfoVO getUserByUsername(String username);
-    void insertUser(User user);
     void updateUserById(Long id, UserInfoDTO userInfoDto);
     void removeUserById(Long id);
 }

@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.common.result.Result;
 import com.example.demo.model.dto.UserInfoDTO;
-import com.example.demo.model.entity.User;
 import com.example.demo.model.vo.UserInfoVO;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
@@ -35,12 +34,6 @@ public class UserController {
     public Result<UserInfoVO> getUserByUsername(@RequestParam String username) {
         UserInfoVO userInfo = userService.getUserByUsername(username);
         return Result.success(userInfo);
-    }
-
-    @PostMapping("/users")
-    public Result<Void> insertUser(@Valid @RequestBody User user) {
-        userService.insertUser(user);
-        return Result.success();
     }
 
     @PutMapping("/users/{id}")

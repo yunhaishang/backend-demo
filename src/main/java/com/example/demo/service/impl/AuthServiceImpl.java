@@ -18,6 +18,7 @@ import com.example.demo.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -39,6 +40,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
     private RedisUtils redisUtils;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void register(RegisterDTO registerDto) {
 
         // 检查用户名是否已存在

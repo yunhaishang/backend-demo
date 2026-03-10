@@ -13,6 +13,7 @@ import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserConverter userConverter;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserInfoVO> getAllUsers() {
         List<User> users = this.list();
 
@@ -31,6 +33,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserInfoVO getUserById(Long id) {
         User user = this.getById(id);
         if(user == null) {
@@ -41,6 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserInfoVO getUserByUsername(String username) {
         if(username == null) {
             throw new BusinessException(ResultCode.PARAM_VALIDATE_FAILED);
@@ -57,11 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void insertUser(User user) {
-        this.save(user);
-    }
-
-    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateUserById(Long id, UserInfoDTO userInfoDto) {
         User user = this.getById(id);
         if(user == null) {
@@ -75,6 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeUserById(Long id) {
         User user = this.getById(id);
         if(user == null) {
