@@ -1,1 +1,2 @@
-This is a backend project demo using spring boot3 framework
+# Spring Boot 3 Project Demo
+This is a backend project demo using Spring Boot 3 framework.

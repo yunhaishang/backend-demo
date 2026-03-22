@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PasswordUtils {
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder encoder;
+
+    public PasswordUtils(BCryptPasswordEncoder encoder) {
+        this.encoder = encoder;
+    }
 
     /**
      * 使用 BCrypt 自动加盐加密

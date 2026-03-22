@@ -11,7 +11,6 @@ import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.vo.UserInfoVO;
 import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +20,11 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
-    @Autowired
-    private UserConverter userConverter;
+    private final UserConverter userConverter;
+
+    public UserServiceImpl(UserConverter userConverter) {
+        this.userConverter = userConverter;
+    }
 
     @Override
     @Transactional(readOnly = true)

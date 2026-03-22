@@ -6,7 +6,6 @@ import com.example.demo.model.dto.RegisterDTO;
 import com.example.demo.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,8 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/auth/register")
     public Result<Void> register(@Valid @RequestBody RegisterDTO registerDto) {

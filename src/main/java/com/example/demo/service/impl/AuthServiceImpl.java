@@ -75,7 +75,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             // 将 token 存入 redis，有效期 30 min，实现自动续期
             redisUtils.set("login:token:" + id, token, 60 * 30);
 
-            // 还需要补充将权限存入 redis (用于权限校验)
+            // 补充将权限存入 redis (用于权限校验)
             // List<String> perms = permissionService.getPermsByUserId(id);
             // redisUtils.set("auth:perms:" + id, perms, 60 * 30);
 

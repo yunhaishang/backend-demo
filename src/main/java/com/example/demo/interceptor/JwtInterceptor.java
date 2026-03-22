@@ -8,22 +8,21 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
 
 @Component
 @Slf4j
 public class JwtInterceptor implements HandlerInterceptor {
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
+    private final RedisUtils redisUtils;
 
-    @Autowired
-    private RedisUtils redisUtils;
+    public JwtInterceptor(JwtUtils jwtUtils, RedisUtils redisUtils) {
+        this.jwtUtils = jwtUtils;
+        this.redisUtils = redisUtils;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
