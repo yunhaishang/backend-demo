@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(find src/test -type f -name \"*.java\" 2>/dev/null | head -10)"
-    ]
-  }
-}
