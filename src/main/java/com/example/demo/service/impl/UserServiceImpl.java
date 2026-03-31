@@ -1,8 +1,10 @@
 package com.example.demo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.common.exception.BusinessException;
+import com.example.demo.common.result.PageResult;
 import com.example.demo.common.result.ResultCode;
 import com.example.demo.model.converter.UserConverter;
 import com.example.demo.model.dto.UserInfoDTO;
@@ -14,24 +16,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    private final UserMapper userMapper;
     private final UserConverter userConverter;
 
-    public UserServiceImpl(UserConverter userConverter) {
+    public UserServiceImpl(UserMapper userMapper, UserConverter userConverter) {
+        this.userMapper = userMapper;
         this.userConverter = userConverter;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserInfoVO> getAllUsers() {
-        List<User> users = this.list();
+    public PageResult<UserInfoVO> getUsersPage(int pageNum, int pageSize) {
+        Page<User> pageParam = new Page<>(pageNum, pageSize);
+        Page<User> usersPage = userMapper.selectPage(pageParam, null);
+        Page<UserInfoVO> userVOPage = userConverter.toVO(usersPage);
 
-        return userConverter.toVO(users);
+        return PageResult.of(userVOPage);
     }
 
     @Override

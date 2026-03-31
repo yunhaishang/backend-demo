@@ -106,6 +106,12 @@
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>3.5.15</version>
         </dependency>
+		<!-- jsqlparser是 MP 的分页插件，需要和 MP 的版本保持一致 -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-jsqlparser</artifactId>
+			<version>3.5.15</version>
+		</dependency>
 
         <!-- mysql-connector -->
         <dependency>

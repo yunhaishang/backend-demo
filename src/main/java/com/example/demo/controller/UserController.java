@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.result.PageResult;
 import com.example.demo.common.result.Result;
 import com.example.demo.model.dto.UserInfoDTO;
 import com.example.demo.model.vo.UserInfoVO;
@@ -7,8 +8,6 @@ import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -21,8 +20,9 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public Result<List<UserInfoVO>> getAllUsers() {
-        List<UserInfoVO> userInfos = userService.getAllUsers();
+    public Result<PageResult<UserInfoVO>> getUsers(@RequestParam(defaultValue = "1") int pageNum,
+                                                   @RequestParam(defaultValue = "10") int pageSize) {
+        PageResult<UserInfoVO> userInfos = userService.getUsersPage(pageNum, pageSize);
         return Result.success(userInfos);
     }
 
@@ -39,14 +39,15 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public Result<Void> updateUserById(@PathVariable Long id, @Valid @RequestBody UserInfoDTO userInfoDto) {
+    public Result<Void> updateUserById(@PathVariable Long id,
+                                       @Valid @RequestBody UserInfoDTO userInfoDto) {
         userService.updateUserById(id, userInfoDto);
         return Result.success();
     }
 
     @DeleteMapping("/users/{id}")
     public Result<Void> removeUserById(@PathVariable Long id) {
-      userService.removeUserById(id);
-      return Result.success();
+        userService.removeUserById(id);
+        return Result.success();
     }
 }
