@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequiresPermissions {
-    String value(); // 权限标识，如 "user:delete"
+public @interface RequiresRoles {
+    String[] value(); // 权限标识，如 {"admin", "user"}
 }

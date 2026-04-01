@@ -16,7 +16,6 @@ import com.example.demo.utils.JwtUtils;
 import com.example.demo.utils.PasswordUtils;
 import com.example.demo.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,20 +23,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements AuthService {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserConverter userConverter;
+    private final JwtUtils jwtUtils;
+    private final PasswordUtils passwordUtils;
+    private final RedisUtils redisUtils;
 
-    @Autowired
-    private UserConverter userConverter;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private PasswordUtils passwordUtils;
-
-    @Autowired
-    private RedisUtils redisUtils;
+    AuthServiceImpl(UserService userService, UserConverter userConverter, JwtUtils jwtUtils,PasswordUtils passwordUtils, RedisUtils redisUtils) {
+        this.userService = userService;
+        this.userConverter = userConverter;
+        this.jwtUtils = jwtUtils;
+        this.passwordUtils = passwordUtils;
+        this.redisUtils = redisUtils;
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -52,6 +50,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         // 创建新用户
         user = userConverter.toEntity(registerDto);
         user.setPassword(passwordUtils.encode(registerDto.getPassword()));
+        user.setRole("user");
 
         this.save(user);
     }
@@ -75,9 +74,9 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             // 将 token 存入 redis，有效期 30 min，实现自动续期
             redisUtils.set("login:token:" + id, token, 60 * 30);
 
-            // 补充将权限存入 redis (用于权限校验)
-            // List<String> perms = permissionService.getPermsByUserId(id);
-            // redisUtils.set("auth:perms:" + id, perms, 60 * 30);
+            // 将角色存入 redis (用于权限校验)，有效期和 token 相同
+            String role = user.getRole();
+            redisUtils.set("role:" + id, role, 60 * 30);
 
             return token;
         } else {
@@ -95,9 +94,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         String redisKey = "login:token:" + id;
         redisUtils.del(redisKey);
 
-        /*
-        redisKey = "auth:perms:" + id;
+        redisKey = "role:" + id;
         redisUtils.del(redisKey);
-        */
     }
 }

@@ -33,7 +33,7 @@ build/
 .vscode/
 
 ### CLAUDE ###
-.claude
+.claude/
 CLAUDE.md
 
 ### ENV ###

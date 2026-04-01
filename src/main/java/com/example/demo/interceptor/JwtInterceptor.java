@@ -62,10 +62,9 @@ public class JwtInterceptor implements HandlerInterceptor {
             redisUtils.expire(redisKey, 60 * 30);
 
             // 8. 将 redis 的数据存到 UserContext
-            UserContext.setUserId(userId);
-            // redisKey = "auth:perms:" + userId;
-            // List<String> perms = (List<String>) redisUtils.get(redisKey);
-            // UserContext.setPerms(perms);
+            redisKey = "role:" + userId;
+            String role = (String) redisUtils.get(redisKey);
+            UserContext.setContext(userId, role);
 
             log.info("用户 {} 校验通过，Token 已续期", userId);
             return true;

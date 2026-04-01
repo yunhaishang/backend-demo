@@ -24,10 +24,10 @@ public enum ResultCode implements IResultCode {
     PARAM_VALIDATE_FAILED(1001, "参数校验失败"),
 
     // 用户相关错误码
-    USER_NOT_EXIST(1102, "用户不存在"),
-    USER_ALREADY_EXIST(1103, "用户已存在"),
-    USER_PASSWORD_ERROR(1104, "密码错误"),
-    USER_DISABLED(1105, "用户已禁用"),
+    USER_NOT_EXIST(1101, "用户不存在"),
+    USER_ALREADY_EXIST(1102, "用户已存在"),
+    USER_PASSWORD_ERROR(1103, "密码错误"),
+    USER_DISABLED(1104, "用户已禁用"),
 
     // 鉴权相关错误码
     TOKEN_EXPIRED(1201, "Token已过期"),
