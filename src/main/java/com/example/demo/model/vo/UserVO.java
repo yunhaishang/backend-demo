@@ -3,7 +3,7 @@ package com.example.demo.model.vo;
 import lombok.Data;
 
 @Data
-public class UserInfoVO {
+public class UserVO {
     private Long id;
     private String username;
     private String role;

@@ -2,18 +2,18 @@ package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.demo.common.result.PageResult;
-import com.example.demo.model.dto.UserInfoDTO;
+import com.example.demo.model.dto.UserDTO;
 import com.example.demo.model.entity.User;
-import com.example.demo.model.vo.UserInfoVO;
+import com.example.demo.model.vo.UserVO;
 
 public interface UserService extends IService<User> {
-    PageResult<UserInfoVO> getUsersPage(int pageNum, int pageSize);
+    PageResult<UserVO> getUsersPage(int pageNum, int pageSize);
 
-    UserInfoVO getUserById(Long id);
+    UserVO getUserById(Long id);
 
-    UserInfoVO getUserByUsername(String username);
+    UserVO getUserByUsername(String username);
 
-    void updateUserById(Long id, UserInfoDTO userInfoDto);
+    void updateUserById(Long id, UserDTO userDto);
 
     void removeUserById(Long id);
 }

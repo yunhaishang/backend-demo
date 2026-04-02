@@ -4,8 +4,8 @@ import com.example.demo.common.annotation.RequiresRoles;
 import com.example.demo.common.context.UserContext;
 import com.example.demo.common.result.PageResult;
 import com.example.demo.common.result.Result;
-import com.example.demo.model.dto.UserInfoDTO;
-import com.example.demo.model.vo.UserInfoVO;
+import com.example.demo.model.dto.UserDTO;
+import com.example.demo.model.vo.UserVO;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -23,31 +23,31 @@ public class UserController {
 
     @GetMapping("/users")
     @RequiresRoles("admin")
-    public Result<PageResult<UserInfoVO>> getUsers(@RequestParam(defaultValue = "1") int pageNum,
-                                                   @RequestParam(defaultValue = "10") int pageSize) {
-        PageResult<UserInfoVO> userInfos = userService.getUsersPage(pageNum, pageSize);
+    public Result<PageResult<UserVO>> getUsers(@RequestParam(defaultValue = "1") int pageNum,
+                                               @RequestParam(defaultValue = "10") int pageSize) {
+        PageResult<UserVO> userInfos = userService.getUsersPage(pageNum, pageSize);
         return Result.success(userInfos);
     }
 
     @GetMapping("/users/{id}")
     @RequiresRoles("admin")
-    public Result<UserInfoVO> getUserById(@PathVariable Long id) {
-        UserInfoVO userInfo = userService.getUserById(id);
+    public Result<UserVO> getUserById(@PathVariable Long id) {
+        UserVO userInfo = userService.getUserById(id);
         return Result.success(userInfo);
     }
 
     @GetMapping("/users/search")
     @RequiresRoles("admin")
-    public Result<UserInfoVO> getUserByUsername(@RequestParam String username) {
-        UserInfoVO userInfo = userService.getUserByUsername(username);
+    public Result<UserVO> getUserByUsername(@RequestParam String username) {
+        UserVO userInfo = userService.getUserByUsername(username);
         return Result.success(userInfo);
     }
 
     @PutMapping("/users/{id}")
     @RequiresRoles("admin")
     public Result<Void> updateUserById(@PathVariable Long id,
-                                       @Valid @RequestBody UserInfoDTO userInfoDto) {
-        userService.updateUserById(id, userInfoDto);
+                                       @Valid @RequestBody UserDTO userDto) {
+        userService.updateUserById(id, userDto);
         return Result.success();
     }
 
@@ -60,15 +60,15 @@ public class UserController {
 
     @GetMapping("/user/profile")
     @RequiresRoles({"admin", "user"})
-    public Result<UserInfoVO> getProfile() {
-        UserInfoVO userInfo = userService.getUserById(UserContext.getUserId());
+    public Result<UserVO> getProfile() {
+        UserVO userInfo = userService.getUserById(UserContext.getUserId());
         return Result.success(userInfo);
     }
 
     @PutMapping("/user/profile")
     @RequiresRoles({"admin", "user"})
-    public Result<UserInfoVO> updateProfile(@Valid @RequestBody UserInfoDTO userInfoDto) {
-        userService.updateUserById(UserContext.getUserId(), userInfoDto);
+    public Result<UserVO> updateProfile(@Valid @RequestBody UserDTO userDto) {
+        userService.updateUserById(UserContext.getUserId(), userDto);
         return Result.success();
     }
 }
