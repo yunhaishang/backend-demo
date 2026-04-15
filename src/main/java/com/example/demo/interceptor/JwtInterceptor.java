@@ -3,25 +3,27 @@ package com.example.demo.interceptor;
 import com.example.demo.common.exception.BusinessException;
 import com.example.demo.common.context.UserContext;
 import com.example.demo.utils.JwtUtils;
-import com.example.demo.utils.RedisUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
 public class JwtInterceptor implements HandlerInterceptor {
 
     private final JwtUtils jwtUtils;
-    private final RedisUtils redisUtils;
+    private final RedisTemplate redisTemplate;
 
-    public JwtInterceptor(JwtUtils jwtUtils, RedisUtils redisUtils) {
+    public JwtInterceptor(JwtUtils jwtUtils, RedisTemplate redisTemplate) {
         this.jwtUtils = jwtUtils;
-        this.redisUtils = redisUtils;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -50,20 +52,21 @@ public class JwtInterceptor implements HandlerInterceptor {
             // 6. Redis 准入校验
             // 即使 JWT 没过期，如果 Redis 里没有这个用户的 Key，说明登录态已失效（如：手动退出或太久没操作）
             String redisKey = "login:token:" + userId;
-            Object storedToken = redisUtils.get(redisKey);
+            Object storedToken = redisTemplate.opsForValue().get(redisKey);
 
             if (storedToken == null || !storedToken.equals(token)) {
                 log.warn("请求拒绝：用户 {} 的 Redis 登录凭证已失效", userId);
                 throw new BusinessException(401, "登录已失效，请重新登录");
             }
 
-            // 7. 滑动续期 只要用户有操作，就将 Redis 中的过期时间重置（例如 30 分钟）
-            // 这里不生成新 Token，只是给旧 Token 的“户口”延长寿命
-            redisUtils.expire(redisKey, 60 * 30);
+            // 7. 滑动续期 只要用户有操作，就将 Redis 中的过期时间重置
+            // 这里不生成新 Token，只是给旧 Token 延时
+            redisTemplate.expire(redisKey, 30, TimeUnit.MINUTES);
+            redisKey = "role:" + userId;
+            redisTemplate.expire(redisKey, 30, TimeUnit.MINUTES);
 
             // 8. 将 redis 的数据存到 UserContext
-            redisKey = "role:" + userId;
-            String role = (String) redisUtils.get(redisKey);
+            String role = (String) redisTemplate.opsForValue().get(redisKey);
             UserContext.setContext(userId, role);
 
             log.info("用户 {} 校验通过，Token 已续期", userId);
@@ -77,7 +80,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        // 9. 非常重要：请求结束后必须清理 ThreadLocal，防止内存泄漏和用户信息错乱
+        // 9. 请求结束后清理 ThreadLocal，防止内存泄漏和用户信息错乱
         UserContext.remove();
     }
 }

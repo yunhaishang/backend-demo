@@ -1,7 +1,6 @@
 package com.example.demo.common.exception;
 
 import com.example.demo.common.result.Result;
-import com.example.demo.common.result.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -38,13 +37,13 @@ public class GlobalExceptionHandler {
                     .collect(Collectors.joining(", "));
         }
         log.error("参数校验异常: {}", message);
-        return Result.error(ResultCode.PARAM_VALIDATE_FAILED.getCode(), message);
+        return Result.error(500, message);
     }
 
     // 处理其他未捕获异常
     @ExceptionHandler(Exception.class)
     public Result<?> handleException(Exception e) {
         log.error("系统异常: ", e);
-        return Result.error(ResultCode.INTERNAL_SERVER_ERROR);
+        return Result.error(500, "服务器内部错误");
     }
 }

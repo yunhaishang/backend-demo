@@ -1,6 +1,5 @@
 package com.example.demo.common.exception;
 
-import com.example.demo.common.result.ResultCode;
 import lombok.Getter;
 
 @Getter
@@ -17,8 +16,4 @@ public class BusinessException extends RuntimeException {
         this.code = code;
     }
 
-    public BusinessException(ResultCode resultCode) {
-        super(resultCode.getMessage());
-        this.code = resultCode.getCode();
-    }
 }

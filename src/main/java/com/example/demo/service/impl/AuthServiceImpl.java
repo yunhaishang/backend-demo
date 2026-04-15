@@ -1,11 +1,8 @@
 package com.example.demo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.common.exception.BusinessException;
-import com.example.demo.common.result.ResultCode;
 import com.example.demo.common.context.UserContext;
-import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.converter.UserConverter;
 import com.example.demo.model.dto.LoginDTO;
 import com.example.demo.model.dto.RegisterDTO;
@@ -14,27 +11,29 @@ import com.example.demo.service.AuthService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtUtils;
 import com.example.demo.utils.PasswordUtils;
-import com.example.demo.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 @Slf4j
-public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements AuthService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
     private final UserConverter userConverter;
     private final JwtUtils jwtUtils;
     private final PasswordUtils passwordUtils;
-    private final RedisUtils redisUtils;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    AuthServiceImpl(UserService userService, UserConverter userConverter, JwtUtils jwtUtils,PasswordUtils passwordUtils, RedisUtils redisUtils) {
+    AuthServiceImpl(UserService userService, UserConverter userConverter, JwtUtils jwtUtils,PasswordUtils passwordUtils, RedisTemplate<String, Object> redisTemplate) {
         this.userService = userService;
         this.userConverter = userConverter;
         this.jwtUtils = jwtUtils;
         this.passwordUtils = passwordUtils;
-        this.redisUtils = redisUtils;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         // 检查用户名是否已存在
         User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, registerDto.getUsername()));
         if(user != null) {
-            throw new BusinessException(ResultCode.USER_ALREADY_EXIST);
+            throw new BusinessException(500, "用户已存在");
         }
 
         // 创建新用户
@@ -52,7 +51,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         user.setPassword(passwordUtils.encode(registerDto.getPassword()));
         user.setRole("user");
 
-        this.save(user);
+        userService.save(user);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         // 检查用户是否存在
         User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
         if(user == null) {
-            throw new BusinessException(ResultCode.USER_NOT_EXIST);
+            throw new BusinessException(500, "用户不存在");
         }
 
         // 验证密码
@@ -72,15 +71,15 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             String token = jwtUtils.generateToken(id, user.getUsername());
 
             // 将 token 存入 redis，有效期 30 min，实现自动续期
-            redisUtils.set("login:token:" + id, token, 60 * 30);
+            redisTemplate.opsForValue().set("login:token:" + id, token, 30, TimeUnit.MINUTES);
 
             // 将角色存入 redis (用于权限校验)，有效期和 token 相同
             String role = user.getRole();
-            redisUtils.set("role:" + id, role, 60 * 30);
+            redisTemplate.opsForValue().set("role:" + id, role, 30, TimeUnit.MINUTES);
 
             return token;
         } else {
-            throw new BusinessException(ResultCode.USER_PASSWORD_ERROR);
+            throw new BusinessException(500, "密码错误");
         }
     }
 
@@ -92,9 +91,9 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         }
 
         String redisKey = "login:token:" + id;
-        redisUtils.del(redisKey);
+        redisTemplate.delete(redisKey);
 
         redisKey = "role:" + id;
-        redisUtils.del(redisKey);
+        redisTemplate.delete(redisKey);
     }
 }

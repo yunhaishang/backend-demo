@@ -44,8 +44,8 @@ public class Result<T> implements Serializable {
      */
     public static <T> Result<T> success(T data) {
         Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMessage(ResultCode.SUCCESS.getMessage());
+        result.setCode(200);
+        result.setMessage("操作成功");
         result.setData(data);
         result.setTimestamp(LocalDateTime.now());
         return result;
@@ -55,7 +55,7 @@ public class Result<T> implements Serializable {
      * 失败
      */
     public static <T> Result<T> error() {
-        return error(ResultCode.FAILED);
+        return error(500, "操作失败");
     }
 
     /**
@@ -63,7 +63,7 @@ public class Result<T> implements Serializable {
      */
     public static <T> Result<T> error(String message) {
         Result<T> result = new Result<>();
-        result.setCode(ResultCode.FAILED.getCode());
+        result.setCode(500);
         result.setMessage(message);
         result.setTimestamp(LocalDateTime.now());
         return result;
@@ -80,14 +80,4 @@ public class Result<T> implements Serializable {
         return result;
     }
 
-    /**
-     * 失败（枚举）
-     */
-    public static <T> Result<T> error(IResultCode resultCode) {
-        Result<T> result = new Result<>();
-        result.setCode(resultCode.getCode());
-        result.setMessage(resultCode.getMessage());
-        result.setTimestamp(LocalDateTime.now());
-        return result;
-    }
 }
