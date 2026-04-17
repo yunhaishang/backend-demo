@@ -29,15 +29,15 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### application-dev ###
+application-dev.yaml
+
 ### VS Code ###
 .vscode/
 
 ### CLAUDE ###
 .claude/
 CLAUDE.md
-
-### ENV ###
-.env
 
 ### repomix ###
 repomix-output.xml
