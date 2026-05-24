@@ -51,8 +51,9 @@ public class JwtInterceptor implements HandlerInterceptor {
 
             // 6. Redis 准入校验
             // 即使 JWT 没过期，如果 Redis 里没有这个用户的 Key，说明登录态已失效（如：手动退出或太久没操作）
-            String redisKey = "login:token:" + userId;
-            Object storedToken = redisTemplate.opsForValue().get(redisKey);
+            // 或者 token 和 Redis 存的 token 不一致也不能登录
+            String redisKey = "auth:user:" + userId;
+            String storedToken = (String) redisTemplate.opsForHash().get(redisKey, "token");
 
             if (storedToken == null || !storedToken.equals(token)) {
                 log.warn("请求拒绝：用户 {} 的 Redis 登录凭证已失效", userId);
@@ -62,11 +63,9 @@ public class JwtInterceptor implements HandlerInterceptor {
             // 7. 滑动续期 只要用户有操作，就将 Redis 中的过期时间重置
             // 这里不生成新 Token，只是给旧 Token 延时
             redisTemplate.expire(redisKey, 30, TimeUnit.MINUTES);
-            redisKey = "role:" + userId;
-            redisTemplate.expire(redisKey, 30, TimeUnit.MINUTES);
 
             // 8. 将 redis 的数据存到 UserContext
-            String role = (String) redisTemplate.opsForValue().get(redisKey);
+            String role = (String) redisTemplate.opsForHash().get(redisKey, "role");
             UserContext.setContext(userId, role);
 
             log.info("用户 {} 校验通过，Token 已续期", userId);

@@ -68,14 +68,14 @@ public class AuthServiceImpl implements AuthService {
         // 验证密码
         if(passwordUtils.matches(password, user.getPassword())) {
             Long id =  user.getId();
+            String role = user.getRole();
             String token = jwtUtils.generateToken(id, user.getUsername());
 
-            // 将 token 存入 redis，有效期 30 min，实现自动续期
-            redisTemplate.opsForValue().set("login:token:" + id, token, 30, TimeUnit.MINUTES);
-
-            // 将角色存入 redis (用于权限校验)，有效期和 token 相同
-            String role = user.getRole();
-            redisTemplate.opsForValue().set("role:" + id, role, 30, TimeUnit.MINUTES);
+            // 使用 Redis 的 hash 同时存放 token 和 role，过期时间 30 分钟
+            String redisKey = "auth:user:" + id;
+            redisTemplate.opsForHash().put(redisKey, "token",  token);
+            redisTemplate.opsForHash().put(redisKey, "role", role);
+            redisTemplate.expire(redisKey, 30, TimeUnit.MINUTES);
 
             return token;
         } else {
@@ -90,10 +90,7 @@ public class AuthServiceImpl implements AuthService {
             return;
         }
 
-        String redisKey = "login:token:" + id;
-        redisTemplate.delete(redisKey);
-
-        redisKey = "role:" + id;
+        String redisKey = "auth:user:" + id;
         redisTemplate.delete(redisKey);
     }
 }

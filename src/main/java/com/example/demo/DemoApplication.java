@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.example.demo.mapper")
+//@MapperScan("com.example.demo.mapper")	// @MapperScan 和 @Mapper二选一
 public class DemoApplication {
 
 	public static void main(String[] args) {

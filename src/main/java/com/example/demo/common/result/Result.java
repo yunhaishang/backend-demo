@@ -62,11 +62,7 @@ public class Result<T> implements Serializable {
      * 失败（自定义消息）
      */
     public static <T> Result<T> error(String message) {
-        Result<T> result = new Result<>();
-        result.setCode(500);
-        result.setMessage(message);
-        result.setTimestamp(LocalDateTime.now());
-        return result;
+        return error(500, message);
     }
 
     /**
